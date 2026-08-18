@@ -98,11 +98,15 @@ def fetch_latest_price():
     # HTTP 요청 헤더: 브라우저인 척(User-Agent) 위장해야 막히지 않는 사이트가 많음.
     # Referer는 "이 요청을 어느 페이지에서 보냈는지"를 알려주는 값으로,
     # 일부 사이트는 이게 없으면 요청을 차단하기도 함.
-    headers = {
+  
+   headers = {
         "Content-Type": "application/json",
+        "Accept": "application/json, text/plain, */*",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         "Referer": "https://www.koreagoldx.co.kr/",
+        "Origin": "https://www.koreagoldx.co.kr",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
     }
     # 요청 본문(body). 이 API는 "최근 1개월치 데이터를 줘" 라고 요청하는 것.
     # 만약 이 값이 안 통하면 "ALL"(전체 기간)로 바꿔서 재시도해볼 수 있음.
