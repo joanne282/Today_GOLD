@@ -222,7 +222,7 @@ def check_target_and_alert(buy_price, sell_price):
 
     # 알림 기준은 "살 때 가격"(내가 금을 살 때 지불하는 가격) 기준으로 판단.
     # 만약 "팔 때 가격" 기준으로 바꾸고 싶으면 아래 줄을 sell_price로 바꾸면 됨.
-    current = float(buy_price)
+    current = float(sell_price)
 
     # 조건이 BELOW면 "목표가 이하로 떨어졌는지", ABOVE면 "목표가 이상으로 올랐는지" 확인
     hit = (condition == "BELOW" and current <= target_price) or (
