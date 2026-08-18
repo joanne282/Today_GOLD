@@ -1,0 +1,39 @@
+name: Telegram Command Handler
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  handle-commands:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Handle telegram commands
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python handle_telegram_commands.py
+
+      - name: Commit updated target/offset files
+        run: |
+          git config user.name "gold-price-bot"
+          git config user.email "actions@github.com"
+          git add data/target.json data/telegram_offset.txt
+          git diff --staged --quiet || git commit -m "update target price via telegram command"
+          git pull --rebase
+          git push
