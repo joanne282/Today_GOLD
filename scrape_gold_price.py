@@ -96,10 +96,12 @@ def fetch_latest_price():
          에러가 나면 print(data)로 실제 응답을 한번 찍어보고 필드명을 맞춰줘야 합니다
     """
     # HTTP 요청 헤더: 브라우저인 척(User-Agent) 위장해야 막히지 않는 사이트가 많음.
-    # Referer는 "이 요청을 어느 페이지에서 보냈는지"를 알려주는 값으로,
-    # 일부 사이트는 이게 없으면 요청을 차단하기도 함.
-  
-   headers = {
+    # Referer/Origin은 "이 요청을 어느 페이지에서 보냈는지"를 알려주는 값으로,
+    # 일부 사이트(특히 CORS를 쓰는 API)는 이게 없거나 이상하면 요청을 차단함.
+    # ※ 그래도 403이 계속 뜬다면, 헤더 문제가 아니라 "GitHub Actions 서버의 IP 자체를
+    #    차단"하는 경우일 수 있음 (한국 사이트들이 해외 클라우드 IP 대역을 막는 경우가 흔함).
+    #    이 경우엔 헤더를 아무리 손봐도 해결이 안 되고, 데이터 소스를 바꿔야 함.
+    headers = {
         "Content-Type": "application/json",
         "Accept": "application/json, text/plain, */*",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -226,7 +228,7 @@ def check_target_and_alert(buy_price, sell_price):
 
     # 알림 기준은 "살 때 가격"(내가 금을 살 때 지불하는 가격) 기준으로 판단.
     # 만약 "팔 때 가격" 기준으로 바꾸고 싶으면 아래 줄을 sell_price로 바꾸면 됨.
-    current = float(sell_price)
+    current = float(buy_price)
 
     # 조건이 BELOW면 "목표가 이하로 떨어졌는지", ABOVE면 "목표가 이상으로 올랐는지" 확인
     hit = (condition == "BELOW" and current <= target_price) or (
