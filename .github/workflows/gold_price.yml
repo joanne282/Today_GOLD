@@ -1,0 +1,41 @@
+name: Gold Price Tracker
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-price:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run scraper
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TARGET_PRICE: ${{ secrets.TARGET_PRICE }}
+          TARGET_CONDITION: ${{ secrets.TARGET_CONDITION }}
+        run: python scrape_gold_price.py
+
+      - name: Commit updated CSV
+        run: |
+          git config user.name "gold-price-bot"
+          git config user.email "actions@github.com"
+          git add data/gold_price.csv
+          git diff --staged --quiet || git commit -m "update gold price data"
+          git pull --rebase
+          git push
